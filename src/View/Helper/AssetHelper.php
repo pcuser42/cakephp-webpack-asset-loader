@@ -20,13 +20,13 @@ class AssetHelper extends Helper {
         'manifest' => WWW_ROOT . DS . 'dist' . DS . 'manifest.json',
         'defaultOptions' => [
             'js' => [
-                'block' => 'script'
+                'block' => 'script',
             ],
             'css' => [
-                'block' => 'css'
+                'block' => 'css',
             ],
         ],
-        'configurationKey' => 'interweber.WebpackAssetLoader.entries'
+        'configurationKey' => 'interweber.WebpackAssetLoader.entries',
     ];
 
     public $helpers = ['Html'];
@@ -101,7 +101,7 @@ class AssetHelper extends Helper {
         $deferredAssets = Configure::read($this->getConfig('configurationKey'));
 
         return $this->_writeEntries($deferredAssets, $type, [
-            $type => $options
+            $type => $options,
         ]);
     }
 

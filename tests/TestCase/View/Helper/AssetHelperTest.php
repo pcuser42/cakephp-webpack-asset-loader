@@ -16,7 +16,6 @@ use Interweberde\WebpackAssetLoader\View\Helper\AssetHelper;
  * @package Interweberde\WebpackAssetLoader\Test\TestCase\View\Helper
  */
 class AssetHelperTest extends TestCase {
-
     private $helper = null;
 
     private $root = null;
@@ -88,7 +87,11 @@ class AssetHelperTest extends TestCase {
         $this->assertContains('/dist/main.css', $loaded, 'Style Loaded');
     }
 
-    // Here we instantiate our helper
+    /**
+     * Here we instantiate our helper
+     *
+     * @return void
+     */
     public function setUp() {
         parent::setUp();
         $View = new View();
