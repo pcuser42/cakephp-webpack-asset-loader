@@ -1,5 +1,5 @@
 <?php
-namespace Interweberde\WebpackAssetLoader\View\Helper;
+namespace Pcuser42\WebpackAssetLoader\View\Helper;
 
 use Cake\Core\Configure;
 use Cake\View\Helper;
@@ -26,7 +26,7 @@ class AssetHelper extends Helper {
                 'block' => 'css',
             ],
         ],
-        'configurationKey' => 'interweber.WebpackAssetLoader.entries',
+        'configurationKey' => 'pcuser42.WebpackAssetLoader.entries',
     ];
 
     public $helpers = ['Html'];

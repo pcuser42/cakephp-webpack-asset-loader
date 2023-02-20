@@ -1,6 +1,6 @@
 <?php
 
-namespace Interweberde\WebpackAssetLoader;
+namespace Pcuser42\WebpackAssetLoader;
 
 use Cake\Core\BasePlugin;
 

@@ -31,12 +31,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Interweberde\\WebpackAssetLoader\\": "src/"
+            "Pcuser42\\WebpackAssetLoader\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Interweberde\\WebpackAssetLoader\\Test\\": "tests/"
+            "Pcuser42\\WebpackAssetLoader\\Test\\": "tests/"
         }
     },
     "scripts": {
@@ -48,7 +48,7 @@
         "php": ">=7.4.0",
         "ext-json": "*",
         "ext-dom": "*",
-        "phpunit/phpunit": "^10.0.9"
+        "phpunit/phpunit": "^9.3 || ^10.0"
     },
     "config": {
         "allow-plugins": {

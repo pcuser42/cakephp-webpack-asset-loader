@@ -1,6 +1,6 @@
 <?php
 
-namespace Interweberde\WebpackAssetLoader\Test\TestCase\View\Helper;
+namespace Pcuser42\WebpackAssetLoader\Test\TestCase\View\Helper;
 
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
@@ -8,12 +8,12 @@ use DOMDocument;
 use DOMNamedNodeMap;
 use DOMNode;
 use Exception;
-use Interweberde\WebpackAssetLoader\View\Helper\AssetHelper;
+use Pcuser42\WebpackAssetLoader\View\Helper\AssetHelper;
 
 /**
  * Class AssetHelperTest
  * @testdox AssetHelper
- * @package Interweberde\WebpackAssetLoader\Test\TestCase\View\Helper
+ * @package Pcuser42\WebpackAssetLoader\Test\TestCase\View\Helper
  */
 class AssetHelperTest extends TestCase {
     private $helper = null;
