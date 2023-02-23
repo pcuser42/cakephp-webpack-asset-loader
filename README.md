@@ -18,14 +18,14 @@ composer require pcuser42/cakephp-webpack-asset-loader
 Load the plugin in `Application`
 
 ```php
-$this->addPlugin('WebpackAssetLoader');
+$this->addPlugin('Pcuser42/WebpackAssetLoader');
 ```
 
 
 Load the helper in `AppView`
 
 ```php
-$this->loadHelper('WebpackAssetLoader.Asset');
+$this->loadHelper('Pcuser42/WebpackAssetLoader.Asset');
 ```
 
 Load all assets for an entrypoint in your template file:
