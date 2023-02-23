@@ -92,7 +92,7 @@ class AssetHelperTest extends TestCase {
      *
      * @return void
      */
-    public function setUp() {
+    public function setUp(): void {
         parent::setUp();
         $View = new View();
 
@@ -111,7 +111,7 @@ class AssetHelperTest extends TestCase {
         $this->root = $findRoot(__FILE__);
 
         $this->helper = new AssetHelper($View, [
-            'manifest' => $this->root . DS . 'tests' . DS . 'manifest.json',
+            'entrypointFile' => $this->root . DS . 'tests' . DS . 'entrypoints.json',
         ]);
     }
 
@@ -161,7 +161,7 @@ class AssetHelperTest extends TestCase {
         $this->expectException(\Exception::class);
 
         new AssetHelper(new View(), [
-            'manifest' => 'SOMERANDOMPATHTHATDOESNOTEXIST' . DS . 'manifest.json',
+            'manifest' => 'SOMERANDOMPATHTHATDOESNOTEXIST' . DS . 'entrypoints.json',
         ]);
     }
 
@@ -208,7 +208,7 @@ class AssetHelperTest extends TestCase {
         $this->expectException(\Exception::class);
 
         new AssetHelper(new View(), [
-            'manifest' => $this->root . DS . 'tests' . DS . 'invalid-manifest.json',
+            'manifest' => $this->root . DS . 'tests' . DS . 'invalid-entrypoints.json',
         ]);
     }
 }
