@@ -112,6 +112,8 @@ class AssetHelper extends Helper {
 
         $assets[$type] = $assets[$type] ?? [];
 
+        $publicPath = $this->entrypoints['publicPath'] ?? "";
+
         $func = 'js' === $type ? 'script' : 'css';
 
         $output = "";
@@ -121,7 +123,7 @@ class AssetHelper extends Helper {
 			}
 
             $output .= $this->Html->$func(
-				$asset,
+				$publicPath . $asset,
                 (
                     $options[$type] ?? $this->getConfig('defaultOptions.js') ?: []
                 ) + ['integrity' => $this->entrypoints[$asset]['integrity'] ?? null]
