@@ -2,6 +2,7 @@
 namespace Pcuser42\WebpackAssetLoader\View\Helper;
 
 use Cake\Core\Configure;
+use Cake\Routing\Router;
 use Cake\View\Helper;
 use Cake\View\Helper\HtmlHelper;
 
@@ -17,7 +18,7 @@ class AssetHelper extends Helper {
      * @var array
      */
     protected $_defaultConfig = [
-        'manifest' => WWW_ROOT . DS . 'dist' . DS . 'manifest.json',
+        'entrypointFile' => WWW_ROOT . 'build' . DS . 'entrypoints.json',
         'defaultOptions' => [
             'js' => [
                 'block' => 'script',
@@ -30,9 +31,9 @@ class AssetHelper extends Helper {
     ];
 
     public $helpers = ['Html'];
-    private $manifest = [];
+    private $entrypoints = [];
 
-    public function initialize(array $config) {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         if (!Configure::read($this->getConfig('configurationKey'))) {
@@ -43,39 +44,39 @@ class AssetHelper extends Helper {
         }
 
         try {
-            $json = file_get_contents($this->getConfig('manifest'));
+            $json = file_get_contents($this->getConfig('entrypointFile'));
 
             if (!$json) {
-                throw new \Exception('could not load manifest file.');
+                throw new \Exception('Could not load entrypoints file.');
             }
         } catch (\Exception $e) {
-            throw new \Exception('could not load manifest file.');
+            throw new \Exception('Could not load entrypoints file.');
         }
 
-        $this->manifest = json_decode($json, true);
+        $this->entrypoints = json_decode($json, true);
 
-        if (!$this->manifest) {
-            throw new \Exception('could not parse manifest file.');
+        if (!$this->entrypoints) {
+            throw new \Exception('Could not parse entrypoints file.');
         }
     }
 
     public function loadEntry($name, array $options = []): string {
-        if (!isset($this->manifest['entrypoints'][$name])) {
+        if (!isset($this->entrypoints['entrypoints'][$name])) {
             throw new \Exception('Unknown Entry \'' . $name . '\'');
         }
 
-        $assets = $this->manifest['entrypoints'][$name];
+        $assets = $this->entrypoints['entrypoints'][$name];
 
         return $this->_writeEntries($assets, 'js', $options + ['js' => []]) .
             $this->_writeEntries($assets, 'css', $options + ['css' => []]);
     }
 
     public function loadEntryDeferred($name, array $options = []): void {
-        if (!isset($this->manifest['entrypoints'][$name])) {
+        if (!isset($this->entrypoints['entrypoints'][$name])) {
             throw new \Exception('Unknown Entry \'' . $name . '\'');
         }
 
-        $assets = $this->manifest['entrypoints'][$name];
+        $assets = $this->entrypoints['entrypoints'][$name];
 
         $assets['js'] = $assets['js'] ?? [];
         $assets['css'] = $assets['css'] ?? [];
@@ -106,19 +107,24 @@ class AssetHelper extends Helper {
     }
 
     private function _writeEntries(array $assets, string $type, array $options): string {
-        $assets[$type] = $assets[$type] ?? [];
+		//get the base URL for the root page, so that if Webpack's manifest has this in their URLs we can avoid duplicating the subfolder
+		$baseUrl = Router::url('/');
 
-        $publicPath = $this->manifest['publicPath'];
+        $assets[$type] = $assets[$type] ?? [];
 
         $func = 'js' === $type ? 'script' : 'css';
 
         $output = "";
         foreach ($assets[$type] as $asset) {
+			if (str_starts_with($asset, $baseUrl)) {
+				$asset = '/' . substr($asset, strlen($baseUrl));
+			}
+
             $output .= $this->Html->$func(
-                $publicPath . $asset,
+				$asset,
                 (
                     $options[$type] ?? $this->getConfig('defaultOptions.js') ?: []
-                ) + ['integrity' => $this->manifest[$asset]['integrity'] ?? null]
+                ) + ['integrity' => $this->entrypoints[$asset]['integrity'] ?? null]
             ) . "\n";
         }
 
