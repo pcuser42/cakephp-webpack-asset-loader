@@ -1,6 +1,6 @@
 {
     "name": "pcuser42/cakephp-webpack-asset-loader",
-    "description": "Webpack Asset handling plugin for CakePHP. It takes an exported manifest.json file and then automatically loads all assets for an specified entry point.",
+    "description": "Webpack Asset handling plugin for CakePHP. It takes an exported entrypoints.json file and then automatically loads all assets for a specified entry point.",
     "type": "cakephp-plugin",
     "license": "MIT",
     "authors": [
