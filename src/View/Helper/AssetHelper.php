@@ -1,4 +1,5 @@
 <?php
+
 namespace Pcuser42\WebpackAssetLoader\View\Helper;
 
 use Cake\Core\Configure;
@@ -12,125 +13,125 @@ use Cake\View\Helper\HtmlHelper;
  * @property HtmlHelper $Html
  */
 class AssetHelper extends Helper {
-    /**
-     * Default configuration.
-     *
-     * @var array
-     */
-    protected $_defaultConfig = [
-        'entrypointFile' => WWW_ROOT . 'build' . DS . 'entrypoints.json',
-        'defaultOptions' => [
-            'js' => [
-                'block' => 'script',
-            ],
-            'css' => [
-                'block' => 'css',
-            ],
-        ],
-        'configurationKey' => 'pcuser42.WebpackAssetLoader.entries',
-    ];
+	/**
+	 * Default configuration.
+	 *
+	 * @var array
+	 */
+	protected $_defaultConfig = [
+		'entrypointFile' => WWW_ROOT . 'build' . DS . 'entrypoints.json',
+		'defaultOptions' => [
+			'js' => [
+				'block' => 'script',
+			],
+			'css' => [
+				'block' => 'css',
+			],
+		],
+		'configurationKey' => 'pcuser42.WebpackAssetLoader.entries',
+	];
 
-    public $helpers = ['Html'];
+	public $helpers = ['Html'];
 
-    private $entrypoints = [];
+	private $entrypoints = [];
 
-    public function initialize(array $config): void {
-        parent::initialize($config);
+	public function initialize(array $config): void {
+		parent::initialize($config);
 
-        if (!Configure::read($this->getConfig('configurationKey'))) {
-            Configure::write($this->getConfig('configurationKey'), [
-                'js' => [],
-                'css' => [],
-            ]);
-        }
+		if (!Configure::read($this->getConfig('configurationKey'))) {
+			Configure::write($this->getConfig('configurationKey'), [
+				'js'  => [],
+				'css' => [],
+			]);
+		}
 
-        try {
-            $json = file_get_contents($this->getConfig('entrypointFile'));
+		try {
+			$json = file_get_contents($this->getConfig('entrypointFile'));
 
-            if (!$json) {
-                throw new \Exception('Could not load entrypoints file.');
-            }
-        } catch (\Exception) {
-            throw new \Exception('Could not load entrypoints file.');
-        }
+			if (!$json) {
+				throw new \Exception('Could not load entrypoints file.');
+			}
+		} catch (\Exception) {
+			throw new \Exception('Could not load entrypoints file.');
+		}
 
-        $this->entrypoints = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+		$this->entrypoints = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
 
-        if (!$this->entrypoints) {
-            throw new \Exception('Could not parse entrypoints file.');
-        }
-    }
+		if (!$this->entrypoints) {
+			throw new \Exception('Could not parse entrypoints file.');
+		}
+	}
 
-    public function loadEntry($name, array $options = []): string {
-        if (!isset($this->entrypoints['entrypoints'][$name])) {
-            throw new \Exception("Unknown Entry '" . $name . "'");
-        }
+	public function loadEntry($name, array $options = []): string {
+		if (!isset($this->entrypoints['entrypoints'][$name])) {
+			throw new \Exception("Unknown Entry '" . $name . "'");
+		}
 
-        $assets = $this->entrypoints['entrypoints'][$name];
+		$assets = $this->entrypoints['entrypoints'][$name];
 
-        return $this->_writeEntries($assets, 'js', $options + ['js' => []]) .
-            $this->_writeEntries($assets, 'css', $options + ['css' => []]);
-    }
+		return $this->_writeEntries($assets, 'js', $options + ['js' => []]) .
+			$this->_writeEntries($assets, 'css', $options + ['css' => []]);
+	}
 
-    public function loadEntryDeferred($name, array $options = []): void {
-        if (!isset($this->entrypoints['entrypoints'][$name])) {
-            throw new \Exception("Unknown Entry '" . $name . "'");
-        }
+	public function loadEntryDeferred($name, array $options = []): void {
+		if (!isset($this->entrypoints['entrypoints'][$name])) {
+			throw new \Exception("Unknown Entry '" . $name . "'");
+		}
 
-        $assets = $this->entrypoints['entrypoints'][$name];
+		$assets = $this->entrypoints['entrypoints'][$name];
 
-        $assets['js'] ??= [];
-        $assets['css'] ??= [];
+		$assets['js']  ??= [];
+		$assets['css'] ??= [];
 
-        $deferredAssets = Configure::read($this->getConfig('configurationKey'));
-        foreach ($assets['js'] as $asset) {
-            // use asset as key to avoid duplicates
-            $deferredAssets['js'][$asset] = $asset;
-        }
+		$deferredAssets = Configure::read($this->getConfig('configurationKey'));
+		foreach ($assets['js'] as $asset) {
+			// use asset as key to avoid duplicates
+			$deferredAssets['js'][$asset] = $asset;
+		}
 
-        foreach ($assets['css'] as $asset) {
-            $deferredAssets['css'][$asset] = $asset;
-        }
+		foreach ($assets['css'] as $asset) {
+			$deferredAssets['css'][$asset] = $asset;
+		}
 
-        Configure::write($this->getConfig('configurationKey'), $deferredAssets);
-    }
+		Configure::write($this->getConfig('configurationKey'), $deferredAssets);
+	}
 
-    public function getDeferredEntries(string $type, array $options = []): string {
-        if ('js' !== $type && 'css' !== $type) {
-            throw new \Exception(sprintf("Unknown asset type '%s'.", $type));
-        }
+	public function getDeferredEntries(string $type, array $options = []): string {
+		if ('js' !== $type && 'css' !== $type) {
+			throw new \Exception(sprintf("Unknown asset type '%s'.", $type));
+		}
 
-        $deferredAssets = Configure::read($this->getConfig('configurationKey'));
+		$deferredAssets = Configure::read($this->getConfig('configurationKey'));
 
-        return $this->_writeEntries($deferredAssets, $type, [
-            $type => $options,
-        ]);
-    }
+		return $this->_writeEntries($deferredAssets, $type, [
+			$type => $options,
+		]);
+	}
 
-    private function _writeEntries(array $assets, string $type, array $options): string {
+	private function _writeEntries(array $assets, string $type, array $options): string {
 		//get the base URL for the root page, so that if Webpack's manifest has this in their URLs we can avoid duplicating the subfolder
 		$baseUrl = Router::url('/');
 
-        $assets[$type] ??= [];
+		$assets[$type] ??= [];
 
-        $publicPath = $this->entrypoints['publicPath'] ?? "";
+		$publicPath = $this->entrypoints['publicPath'] ?? "";
 
-        $func = 'js' === $type ? 'script' : 'css';
+		$func = 'js' === $type ? 'script' : 'css';
 
-        $output = "";
-        foreach ($assets[$type] as $asset) {
+		$output = "";
+		foreach ($assets[$type] as $asset) {
 			if (str_starts_with((string) $asset, $baseUrl)) {
 				$asset = '/' . substr((string) $asset, strlen($baseUrl));
 			}
 
-            $output .= $this->Html->$func(
+			$output .= $this->Html->$func(
 				$publicPath . $asset,
-                (
-                    $options[$type] ?? $this->getConfig('defaultOptions.js') ?: []
-                ) + ['integrity' => $this->entrypoints[$asset]['integrity'] ?? null]
-            ) . "\n";
-        }
+				(
+					$options[$type] ?? $this->getConfig('defaultOptions.js') ?: []
+				) + ['integrity' => $this->entrypoints[$asset]['integrity'] ?? null]
+			) . "\n";
+		}
 
-        return $output;
-    }
+		return $output;
+	}
 }
