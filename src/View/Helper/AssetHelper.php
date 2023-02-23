@@ -31,6 +31,7 @@ class AssetHelper extends Helper {
     ];
 
     public $helpers = ['Html'];
+
     private $entrypoints = [];
 
     public function initialize(array $config): void {
@@ -49,11 +50,11 @@ class AssetHelper extends Helper {
             if (!$json) {
                 throw new \Exception('Could not load entrypoints file.');
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             throw new \Exception('Could not load entrypoints file.');
         }
 
-        $this->entrypoints = json_decode($json, true);
+        $this->entrypoints = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
 
         if (!$this->entrypoints) {
             throw new \Exception('Could not parse entrypoints file.');
@@ -62,7 +63,7 @@ class AssetHelper extends Helper {
 
     public function loadEntry($name, array $options = []): string {
         if (!isset($this->entrypoints['entrypoints'][$name])) {
-            throw new \Exception('Unknown Entry \'' . $name . '\'');
+            throw new \Exception("Unknown Entry '" . $name . "'");
         }
 
         $assets = $this->entrypoints['entrypoints'][$name];
@@ -73,13 +74,13 @@ class AssetHelper extends Helper {
 
     public function loadEntryDeferred($name, array $options = []): void {
         if (!isset($this->entrypoints['entrypoints'][$name])) {
-            throw new \Exception('Unknown Entry \'' . $name . '\'');
+            throw new \Exception("Unknown Entry '" . $name . "'");
         }
 
         $assets = $this->entrypoints['entrypoints'][$name];
 
-        $assets['js'] = $assets['js'] ?? [];
-        $assets['css'] = $assets['css'] ?? [];
+        $assets['js'] ??= [];
+        $assets['css'] ??= [];
 
         $deferredAssets = Configure::read($this->getConfig('configurationKey'));
         foreach ($assets['js'] as $asset) {
@@ -96,7 +97,7 @@ class AssetHelper extends Helper {
 
     public function getDeferredEntries(string $type, array $options = []): string {
         if ('js' !== $type && 'css' !== $type) {
-            throw new \Exception("Unknown asset type '$type'.");
+            throw new \Exception(sprintf("Unknown asset type '%s'.", $type));
         }
 
         $deferredAssets = Configure::read($this->getConfig('configurationKey'));
@@ -110,7 +111,7 @@ class AssetHelper extends Helper {
 		//get the base URL for the root page, so that if Webpack's manifest has this in their URLs we can avoid duplicating the subfolder
 		$baseUrl = Router::url('/');
 
-        $assets[$type] = $assets[$type] ?? [];
+        $assets[$type] ??= [];
 
         $publicPath = $this->entrypoints['publicPath'] ?? "";
 
@@ -118,8 +119,8 @@ class AssetHelper extends Helper {
 
         $output = "";
         foreach ($assets[$type] as $asset) {
-			if (str_starts_with($asset, $baseUrl)) {
-				$asset = '/' . substr($asset, strlen($baseUrl));
+			if (str_starts_with((string) $asset, $baseUrl)) {
+				$asset = '/' . substr((string) $asset, strlen($baseUrl));
 			}
 
             $output .= $this->Html->$func(

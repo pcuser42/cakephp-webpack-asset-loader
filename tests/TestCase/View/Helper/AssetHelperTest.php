@@ -16,11 +16,11 @@ use Pcuser42\WebpackAssetLoader\View\Helper\AssetHelper;
  * @package Pcuser42\WebpackAssetLoader\Test\TestCase\View\Helper
  */
 class AssetHelperTest extends TestCase {
-    private $helper = null;
+    private ?AssetHelper $helper = null;
 
-    private $root = null;
+    private ?string $root = null;
 
-    private function checkHtmlForScripts(string $html) {
+    private function checkHtmlForScripts(string $html): void {
         $dom = new DOMDocument();
         $dom->loadHTML($html);
 
@@ -28,7 +28,7 @@ class AssetHelperTest extends TestCase {
         $this->assertEquals($scripts->count(), 2);
 
         $loaded = [];
-        for ($i = 0; $i < $scripts->length; $i++) {
+        for ($i = 0; $i < $scripts->length; ++$i) {
             /** @var DOMNode $script */
             $script = $scripts->item($i);
             $this->assertNotNull($script->attributes);
@@ -60,7 +60,7 @@ class AssetHelperTest extends TestCase {
         $this->assertContains('/dist/vendors.js', $loaded, 'Asset #2 Loaded');
     }
 
-    private function checkHtmlForStyles(string $html) {
+    private function checkHtmlForStyles(string $html): void {
         $dom = new DOMDocument();
         $dom->loadHTML($html);
 
@@ -68,7 +68,7 @@ class AssetHelperTest extends TestCase {
         $this->assertEquals($styles->count(), 1);
 
         $loaded = [];
-        for ($i = 0; $i < $styles->length; $i++) {
+        for ($i = 0; $i < $styles->length; ++$i) {
             /** @var DOMNode $style */
             $style = $styles->item($i);
             $this->assertNotNull($style->attributes);
@@ -89,14 +89,12 @@ class AssetHelperTest extends TestCase {
 
     /**
      * Here we instantiate our helper
-     *
-     * @return void
      */
-    public function setUp(): void {
+    protected function setUp(): void {
         parent::setUp();
         $View = new View();
 
-        $findRoot = function ($root) {
+        $findRoot = static function ($root) : string {
             do {
                 $lastRoot = $root;
                 $root = dirname($root);
@@ -104,7 +102,6 @@ class AssetHelperTest extends TestCase {
                     return $root;
                 }
             } while ($root !== $lastRoot);
-
             throw new Exception("Cannot find the root of the application, unable to run tests");
         };
 
@@ -118,7 +115,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox loads js entries correctly
      */
-    public function testLoadJsEntry() {
+    public function testLoadJsEntry(): void {
         $html = $this->helper->loadEntry('main');
 
         $this->checkHtmlForScripts($html);
@@ -128,7 +125,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox loads css entries correctly
      */
-    public function testLoadCssEntry() {
+    public function testLoadCssEntry(): void {
         $html = $this->helper->loadEntry('main');
 
         $this->checkHtmlForStyles($html);
@@ -137,7 +134,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox loads deferred js entries correctly
      */
-    public function testGetDeferredJsEntries() {
+    public function testGetDeferredJsEntries(): void {
         $this->helper->loadEntryDeferred('main');
 
         $html = $this->helper->getDeferredEntries('js');
@@ -147,7 +144,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox loads deferred css entries correctly
      */
-    public function testGetDeferredCssEntries() {
+    public function testGetDeferredCssEntries(): void {
         $this->helper->loadEntryDeferred('main');
 
         $html = $this->helper->getDeferredEntries('css');
@@ -157,7 +154,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox throws an exception if the manifest does not exist
      */
-    public function testThrowsExceptionWhenManifestDoesNotExist() {
+    public function testThrowsExceptionWhenManifestDoesNotExist(): void {
         $this->expectException(\Exception::class);
 
         new AssetHelper(new View(), [
@@ -168,7 +165,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox loadEntry throws an exception if the specified entry does not exist
      */
-    public function testThrowsExceptionWhenEntryDoesNotExist() {
+    public function testThrowsExceptionWhenEntryDoesNotExist(): void {
         $this->expectException(\Exception::class);
 
         $this->helper->loadEntry('notexistent');
@@ -177,7 +174,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox loadEntryDeferred throws an exception if the specified entry does not exist
      */
-    public function testGetDeferredThrowsExceptionWhenEntryDoesNotExist() {
+    public function testGetDeferredThrowsExceptionWhenEntryDoesNotExist(): void {
         $this->expectException(\Exception::class);
 
         $this->helper->loadEntryDeferred('notexistent');
@@ -186,7 +183,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox getDeferredEntries throws an exception if the specified entry does not exist
      */
-    public function testGetDeferredEntriesThrowsExceptionWhenCalledWithInvalidType() {
+    public function testGetDeferredEntriesThrowsExceptionWhenCalledWithInvalidType(): void {
         $this->expectException(\Exception::class);
 
         $this->helper->loadEntryDeferred('main');
@@ -196,7 +193,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox getDeferredEntries returns empty string when there are no assets with specified type
      */
-    public function testGetDeferredEntriesReturnsEmptyStringWhenThereIsNoAssetWithType() {
+    public function testGetDeferredEntriesReturnsEmptyStringWhenThereIsNoAssetWithType(): void {
         $this->helper->loadEntryDeferred('nocss');
         $this->assertEmpty($this->helper->getDeferredEntries('css'));
     }
@@ -204,7 +201,7 @@ class AssetHelperTest extends TestCase {
     /**
      * @testdox throws exception when manifest is not parsable
      */
-    public function testThrowsExceptionWhenManifestIsNotParsable() {
+    public function testThrowsExceptionWhenManifestIsNotParsable(): void {
         $this->expectException(\Exception::class);
 
         new AssetHelper(new View(), [
