@@ -31,7 +31,7 @@ $this->loadHelper('Pcuser42/WebpackAssetLoader.Asset');
 Load all assets for an entrypoint in your template file:
 
 ```php
-<?=$this->Asset->getEntries('js')?>
+<?=$this->Asset->loadEntry('app')?>
 ```
 
 Or load assets and output them one type at a time in your view file:
