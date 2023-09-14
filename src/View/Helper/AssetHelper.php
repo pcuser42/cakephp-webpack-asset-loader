@@ -18,7 +18,7 @@ class AssetHelper extends Helper {
 	 *
 	 * @var array
 	 */
-	protected $_defaultConfig = [
+	protected array $_defaultConfig = [
 		'entrypointFile' => WWW_ROOT . 'build' . DS . 'entrypoints.json',
 		'defaultOptions' => [
 			'js' => [
@@ -31,9 +31,9 @@ class AssetHelper extends Helper {
 		'configurationKey' => 'pcuser42.WebpackAssetLoader.entries',
 	];
 
-	public $helpers = ['Html'];
+	public array $helpers = ['Html'];
 
-	private $entrypoints = [];
+	private array $entrypoints = [];
 
 	public function initialize(array $config): void {
 		parent::initialize($config);
@@ -62,7 +62,7 @@ class AssetHelper extends Helper {
 		}
 	}
 
-	public function loadEntry($name, array $options = []): string {
+	public function loadEntry(string $name, array $options = []): string {
 		if (!isset($this->entrypoints['entrypoints'][$name])) {
 			throw new \Exception("Unknown Entry '" . $name . "'");
 		}
@@ -73,7 +73,7 @@ class AssetHelper extends Helper {
 			$this->_writeEntries($assets, 'css', $options + ['css' => []]);
 	}
 
-	public function loadEntryDeferred($name, array $options = []): void {
+	public function loadEntryDeferred(string $name, array $options = []): void {
 		if (!isset($this->entrypoints['entrypoints'][$name])) {
 			throw new \Exception("Unknown Entry '" . $name . "'");
 		}
