@@ -15,8 +15,6 @@ use Cake\View\Helper\HtmlHelper;
 class AssetHelper extends Helper {
 	/**
 	 * Default configuration.
-	 *
-	 * @var array
 	 */
 	protected array $_defaultConfig = [
 		'entrypointFile' => WWW_ROOT . 'build' . DS . 'entrypoints.json',
