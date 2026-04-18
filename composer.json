@@ -20,7 +20,7 @@
         "source": "https://github.com/pcuser42/cakephp-webpack-asset-loader"
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.3",
         "cakephp/cakephp": "^5.0"
     },
     "require-dev": {
