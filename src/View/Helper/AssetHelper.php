@@ -44,20 +44,48 @@ class AssetHelper extends Helper {
 		}
 
 		try {
-			$json = file_get_contents($this->getConfig('entrypointFile'));
+			$json = @file_get_contents($this->getConfig('entrypointFile'));
 
-			if (!$json) {
+			if ($json === false || $json === '') {
 				throw new \Exception('Could not load entrypoints file.');
 			}
-		} catch (\Exception) {
+		} catch (\Throwable) {
 			throw new \Exception('Could not load entrypoints file.');
 		}
 
-		$this->entrypoints = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+		try {
+			$entrypoints = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+		} catch (\JsonException $exception) {
+			throw new \Exception('Could not parse entrypoints file.', previous: $exception);
+		}
 
-		if (!$this->entrypoints) {
+		if (!is_array($entrypoints) || !isset($entrypoints['entrypoints']) || !is_array($entrypoints['entrypoints'])) {
 			throw new \Exception('Could not parse entrypoints file.');
 		}
+
+		foreach ($entrypoints['entrypoints'] as $entry) {
+			if (!is_array($entry)) {
+				throw new \Exception('Could not parse entrypoints file.');
+			}
+
+			foreach (['js', 'css'] as $type) {
+				if (isset($entry[$type]) && (!is_array($entry[$type]) || array_filter($entry[$type], 'is_string') !== $entry[$type])) {
+					throw new \Exception('Could not parse entrypoints file.');
+				}
+			}
+		}
+
+		foreach ($entrypoints as $asset => $metadata) {
+			if (in_array($asset, ['entrypoints', 'publicPath'], true)) {
+				continue;
+			}
+
+			if (!is_array($metadata) || (isset($metadata['integrity']) && !is_string($metadata['integrity']))) {
+				throw new \Exception('Could not parse entrypoints file.');
+			}
+		}
+
+		$this->entrypoints = $entrypoints;
 	}
 
 	public function loadEntry(string $name, array $options = []): string {

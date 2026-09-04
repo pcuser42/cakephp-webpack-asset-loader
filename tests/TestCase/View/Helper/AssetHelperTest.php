@@ -9,6 +9,7 @@ use DOMNamedNodeMap;
 use DOMNode;
 use Exception;
 use Pcuser42\WebpackAssetLoader\View\Helper\AssetHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Class AssetHelperTest
@@ -157,10 +158,45 @@ class AssetHelperTest extends TestCase {
 	 */
 	public function testThrowsExceptionWhenManifestDoesNotExist(): void {
 		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('Could not load entrypoints file.');
 
 		new AssetHelper(new View(), [
-			'manifest' => 'SOMERANDOMPATHTHATDOESNOTEXIST' . DS . 'entrypoints.json',
+			'entrypointFile' => 'SOMERANDOMPATHTHATDOESNOTEXIST' . DS . 'entrypoints.json',
 		]);
+	}
+
+	/**
+	 * @return array<string, array{string}>
+	 */
+	public static function malformedManifestProvider(): array {
+		return [
+			'empty array'            => ['[]'],
+			'empty object'           => ['{}'],
+			'null'                   => ['null'],
+			'missing entrypoints'    => ['{"publicPath":"/dist/"}'],
+			'scalar entrypoints'     => ['{"entrypoints":"main"}'],
+			'scalar entry'           => ['{"entrypoints":{"main":"main.js"}}'],
+			'scalar asset list'      => ['{"entrypoints":{"main":{"js":"main.js"}}}'],
+			'non-string asset'       => ['{"entrypoints":{"main":{"js":[123]}}}'],
+			'scalar asset metadata'  => ['{"entrypoints":{},"main.js":"hash"}'],
+			'non-string integrity'   => ['{"entrypoints":{},"main.js":{"integrity":123}}'],
+		];
+	}
+
+	#[DataProvider('malformedManifestProvider')]
+	public function testThrowsExceptionWhenManifestStructureIsInvalid(string $manifest): void {
+		$manifestFile = tempnam(sys_get_temp_dir(), 'entrypoints-');
+		$this->assertNotFalse($manifestFile);
+		file_put_contents($manifestFile, $manifest);
+
+		try {
+			$this->expectException(\Exception::class);
+			$this->expectExceptionMessage('Could not parse entrypoints file.');
+
+			new AssetHelper(new View(), ['entrypointFile' => $manifestFile]);
+		} finally {
+			unlink($manifestFile);
+		}
 	}
 
 	/**
@@ -204,9 +240,10 @@ class AssetHelperTest extends TestCase {
 	 */
 	public function testThrowsExceptionWhenManifestIsNotParsable(): void {
 		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('Could not parse entrypoints file.');
 
 		new AssetHelper(new View(), [
-			'manifest' => $this->root . DS . 'tests' . DS . 'invalid-entrypoints.json',
+			'entrypointFile' => $this->root . DS . 'tests' . DS . 'invalid-entrypoints.json',
 		]);
 	}
 }
