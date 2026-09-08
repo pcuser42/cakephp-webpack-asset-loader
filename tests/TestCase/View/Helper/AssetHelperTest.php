@@ -10,12 +10,9 @@ use DOMNode;
 use Exception;
 use Pcuser42\WebpackAssetLoader\View\Helper\AssetHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestDox;
 
-/**
- * Class AssetHelperTest
- * @testdox AssetHelper
- * @package Pcuser42\WebpackAssetLoader\Test\TestCase\View\Helper
- */
+#[TestDox('AssetHelper')]
 class AssetHelperTest extends TestCase {
 	private ?AssetHelper $helper = null;
 
@@ -114,9 +111,7 @@ class AssetHelperTest extends TestCase {
 		]);
 	}
 
-	/**
-	 * @testdox loads js entries correctly
-	 */
+	#[TestDox('loads js entries correctly')]
 	public function testLoadJsEntry(): void {
 		$html = $this->helper->loadEntry('main');
 
@@ -124,18 +119,14 @@ class AssetHelperTest extends TestCase {
 		$this->checkHtmlForStyles($html);
 	}
 
-	/**
-	 * @testdox loads css entries correctly
-	 */
+	#[TestDox('loads css entries correctly')]
 	public function testLoadCssEntry(): void {
 		$html = $this->helper->loadEntry('main');
 
 		$this->checkHtmlForStyles($html);
 	}
 
-	/**
-	 * @testdox loads deferred js entries correctly
-	 */
+	#[TestDox('loads deferred js entries correctly')]
 	public function testGetDeferredJsEntries(): void {
 		$this->helper->loadEntryDeferred('main');
 
@@ -143,9 +134,7 @@ class AssetHelperTest extends TestCase {
 		$this->checkHtmlForScripts($html);
 	}
 
-	/**
-	 * @testdox loads deferred css entries correctly
-	 */
+	#[TestDox('loads deferred css entries correctly')]
 	public function testGetDeferredCssEntries(): void {
 		$this->helper->loadEntryDeferred('main');
 
@@ -153,9 +142,7 @@ class AssetHelperTest extends TestCase {
 		$this->checkHtmlForStyles($html);
 	}
 
-	/**
-	 * @testdox throws an exception if the manifest does not exist
-	 */
+	#[TestDox('throws an exception if the manifest does not exist')]
 	public function testThrowsExceptionWhenManifestDoesNotExist(): void {
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Could not load entrypoints file.');
@@ -199,27 +186,21 @@ class AssetHelperTest extends TestCase {
 		}
 	}
 
-	/**
-	 * @testdox loadEntry throws an exception if the specified entry does not exist
-	 */
+	#[TestDox('loadEntry throws an exception if the specified entry does not exist')]
 	public function testThrowsExceptionWhenEntryDoesNotExist(): void {
 		$this->expectException(\Exception::class);
 
 		$this->helper->loadEntry('notexistent');
 	}
 
-	/**
-	 * @testdox loadEntryDeferred throws an exception if the specified entry does not exist
-	 */
+	#[TestDox('loadEntryDeferred throws an exception if the specified entry does not exist')]
 	public function testGetDeferredThrowsExceptionWhenEntryDoesNotExist(): void {
 		$this->expectException(\Exception::class);
 
 		$this->helper->loadEntryDeferred('notexistent');
 	}
 
-	/**
-	 * @testdox getDeferredEntries throws an exception if the specified entry does not exist
-	 */
+	#[TestDox('getDeferredEntries throws an exception if the specified entry does not exist')]
 	public function testGetDeferredEntriesThrowsExceptionWhenCalledWithInvalidType(): void {
 		$this->expectException(\Exception::class);
 
@@ -227,17 +208,13 @@ class AssetHelperTest extends TestCase {
 		$this->helper->getDeferredEntries('docx');
 	}
 
-	/**
-	 * @testdox getDeferredEntries returns empty string when there are no assets with specified type
-	 */
+	#[TestDox('getDeferredEntries returns empty string when there are no assets with specified type')]
 	public function testGetDeferredEntriesReturnsEmptyStringWhenThereIsNoAssetWithType(): void {
 		$this->helper->loadEntryDeferred('nocss');
 		$this->assertEmpty($this->helper->getDeferredEntries('css'));
 	}
 
-	/**
-	 * @testdox throws exception when manifest is not parsable
-	 */
+	#[TestDox('throws exception when manifest is not parsable')]
 	public function testThrowsExceptionWhenManifestIsNotParsable(): void {
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Could not parse entrypoints file.');
